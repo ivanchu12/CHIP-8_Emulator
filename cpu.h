@@ -3,10 +3,14 @@
 #include <stdint.h>
 
 const int NUM_REGISTERS = 16;
+const int VF_REGISTER = 15;
 const int NUM_KEYS = 16;
 const int MEMORY_SIZE = 4096;
 const int STACK_SIZE = 16;
-const int DISPLAY_SIZE = 2048;
+
+const int DISPLAY_X = 64;
+const int DISPLAY_Y = 32;
+const int DISPLAY_SIZE = DISPLAY_X * DISPLAY_Y;
 
 typedef struct {
     uint8_t memory[MEMORY_SIZE]; // Main memory

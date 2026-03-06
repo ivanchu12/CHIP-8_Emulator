@@ -1,4 +1,5 @@
 #include <string.h>
+#include <sys/random.h>
 #include "cpu.h"
 
 uint8_t get_first_operand(uint16_t opcode){
@@ -107,7 +108,7 @@ void OP_8xy4(Chip8* chip8){
     uint8_t vy = get_second_operand(chip8->opcode);
     uint16_t result = chip8->registers[vx] + chip8->registers[vy];
     
-    chip8->registers[15] = (result > 255)? 1 : 0;
+    chip8->registers[VF_REGISTER] = (result > 255)? 1 : 0;
     chip8->registers[vx] = result & 0xFF;
 }
 
@@ -115,13 +116,13 @@ void OP_8xy5(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     uint8_t vy = get_second_operand(chip8->opcode);
     
-    chip8->registers[15] = (chip8->registers[vx] > chip8->registers[vy])? 1 : 0;
+    chip8->registers[VF_REGISTER] = (chip8->registers[vx] > chip8->registers[vy])? 1 : 0;
     chip8->registers[vx] = chip8->registers[vx] - chip8->registers[vy];
 }
 
 void OP_8xy6(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
-    chip8->registers[15] = (chip8->registers[vx] & 0x01);
+    chip8->registers[VF_REGISTER] = (chip8->registers[vx] & 0x01);
     chip8->registers[vx] = chip8->registers[vx] >> 1;
 }
 
@@ -129,13 +130,13 @@ void OP_8xy7(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     uint8_t vy = get_second_operand(chip8->opcode);
     
-    chip8->registers[15] = (chip8->registers[vy] > chip8->registers[vx])? 1 : 0;
+    chip8->registers[VF_REGISTER] = (chip8->registers[vy] > chip8->registers[vx])? 1 : 0;
     chip8->registers[vy] = chip8->registers[vy] - chip8->registers[vx];
 }
 
 void OP_8xyE(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
-    chip8->registers[15] = (chip8->registers[vx] & 0x80) >> 128;
+    chip8->registers[VF_REGISTER] = (chip8->registers[vx] & 0x80) >> 128;
     chip8->registers[vx] = chip8->registers[vx] << 1;
 }
 
@@ -157,9 +158,84 @@ void OP_Bnnn(Chip8* chip8){
     chip8->pc = addr + chip8->registers[0];
 }
 
+void OP_Cxkk(Chip8* chip8){
+    uint8_t random_byte;
+    getrandom(&random_byte, 1, 0);
+    uint8_t vx = get_first_operand(chip8->opcode);
+    uint8_t kk = get_value(chip8->opcode);
+    chip8->registers[vx] = random_byte & kk;
+}
+
+void OP_Dxyn(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+    uint8_t vy = get_second_operand(chip8->opcode);
+    uint8_t n = chip8->opcode && 0x000F;
+
+    uint8_t x = chip8->registers[vx];
+    uint8_t y = chip8->registers[vy];
+    for (int i = 0; i<n; i++){
+        int current_display_pos = x + y*DISPLAY_X;
+        int8_t updated_sprite = chip8->memory[chip8->ir + i];
+        
+        uint8_t mask = 0x80;
+        uint8_t original;
+        uint8_t result;
+        for (int j = 0; j<8; j++){
+            original = chip8->display[current_display_pos];
+            result = chip8->display[current_display_pos] ^ (updated_sprite & mask);
+            chip8->display[current_display_pos] = result;
+
+            chip8->registers[VF_REGISTER] = (original == 1 && result == 0)? 1 | chip8->registers[15] : 0 | chip8->registers[15];
+
+            current_display_pos++;
+            if (current_display_pos%DISPLAY_X < x){
+                current_display_pos -= DISPLAY_X;
+            }
+            mask >>= 1;
+        }
+        y++;
+    }
+}
+
+void OP_Ex9E(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+
+    // We do not check if Vx value matches to one of the possible keys
+    // No safeguard in the specification
+    if (chip8->keypad[chip8->registers[vx]] == 1){
+        chip8->pc += 2;
+    }
+}
+
+void OP_ExA1(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+
+    // We do not check if Vx value matches to one of the possible keys
+    // No safeguard in the specification
+    if (chip8->keypad[chip8->registers[vx]] != 1){
+        chip8->pc += 2;
+    }
+}
+
 void OP_Fx07(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     chip8->registers[vx] = chip8->dt;
+}
+
+void OP_Fx0A(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+
+    uint8_t i = 0;
+    uint8_t exit = 0;
+    while (i < NUM_REGISTERS && !exit){
+        if (chip8->keypad[i] == 1){
+            chip8->registers[vx] = i;
+            exit = 1;
+        }
+    }
+    if (!exit){
+        chip8->pc -= 2;
+    }
 }
 
 void OP_Fx15(Chip8* chip8){
@@ -175,4 +251,34 @@ void OP_Fx18(Chip8* chip8){
 void OP_Fx1E(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     chip8->ir += chip8->registers[vx];
+}
+
+void OP_Fx29(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+    chip8->ir = chip8->memory[FONT_BASE_ADDRESS + 5 * chip8->registers[vx]];
+}
+
+void OP_Fx33(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+    uint8_t x = chip8->registers[vx];
+
+    uint8_t divisor = 10;
+    for (int i = 2; i>=0; i--){
+        chip8->memory[chip8->ir + i] = x%divisor;
+        x /= 10;
+    }
+}
+
+void OP_Fx55(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+    for (int i = 0; i<=vx; i++){
+        chip8->memory[chip8->ir + i] = chip8->registers[i];
+    }
+}
+
+void OP_Fx65(Chip8* chip8){
+    uint8_t vx = get_first_operand(chip8->opcode);
+    for (int i = 0; i<=vx; i++){
+        chip8->registers[i] = chip8->memory[chip8->ir + i];
+    }
 }
