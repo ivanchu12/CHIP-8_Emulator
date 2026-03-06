@@ -1,4 +1,30 @@
+#include <string.h>
 #include "cpu.h"
+
+void OP_0nnn(Chip8* chip8){
+    // Do nothing, function is not used in mdoern CHIP-8
+}
+
+void OP_00E0(Chip8* chip8){
+    memset(chip8->display, 0, DISPLAY_SIZE);
+}
+
+void OP_00EE(Chip8* chip8){
+    chip8->pc = chip8->stack[chip8->sp];
+    chip8->sp -= 1;
+}
+
+void OP_1nnn(Chip8* chip8){
+    uint16_t addr = chip8->opcode & 0x0FFF;
+    chip8->pc = addr;
+}
+
+void OP_2nnn(Chip8* chip8){
+    uint16_t addr = chip8->opcode & 0x0FFF;
+    chip8->sp += 1;
+    chip8->stack[chip8->sp] = chip8->pc;
+    chip8->pc = addr;
+}
 
 void OP_3xkk(Chip8* chip8){
     uint8_t vx = (chip8->opcode & 0x0F00) >> 8;

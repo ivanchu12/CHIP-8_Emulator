@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <string.h>
 #include "cpu.h"
 
 void load_font(Chip8* chip8){
