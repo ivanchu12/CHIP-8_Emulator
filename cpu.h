@@ -56,7 +56,10 @@ uint8_t FONT_SPRITES[] = {
 };
 
 void init(Chip8* chip8);
+void load_ROM(Chip8* chip8, char** filename);
 void fetch(Chip8* chip8);
 void execute(Chip8* chip8);
+void update_timers(Chip8* chip8);
+void cycle(Chip8* chip8);
 
 #endif

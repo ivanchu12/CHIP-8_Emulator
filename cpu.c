@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "cpu.h"
 
 void load_font(Chip8* chip8){
@@ -21,6 +22,15 @@ void init(Chip8* chip8){
     chip8->sp = 0;
     chip8->st = 0;
     load_font(chip8);
+}
+
+void load_ROM(Chip8* chip8, char** filename){
+    FILE* file = fopen(&filename, "rb");
+    fseek(file, 0, SEEK_END);
+    int filelen = ftell(file);
+    rewind(file);
+
+    fread(chip8->memory[ROM_BASE_ADDRESS], 1, filelen, file);
 }
 
 void fetch(Chip8* chip8){
@@ -82,4 +92,18 @@ void execute(Chip8* chip8){
             }; break;
         default: OP_0nnn(chip8);
     }
+}
+
+void update_timers(Chip8* chip8){
+    if (chip8->st > 0){
+        chip8->st--;
+    }
+    if (chip8->dt > 0){
+        chip8->dt--;
+    }
+}
+
+void cycle(Chip8* chip8){
+    fetch(chip8);
+    execute(chip8);
 }
