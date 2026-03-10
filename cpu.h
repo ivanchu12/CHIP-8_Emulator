@@ -12,6 +12,8 @@ const int DISPLAY_X = 64;
 const int DISPLAY_Y = 32;
 const int DISPLAY_SIZE = DISPLAY_X * DISPLAY_Y;
 
+const int ROM_BASE_ADDRESS = 0x200;
+
 typedef struct {
     uint8_t memory[MEMORY_SIZE]; // Main memory
 
@@ -54,5 +56,7 @@ uint8_t FONT_SPRITES[] = {
 };
 
 void init(Chip8* chip8);
+void fetch(Chip8* chip8);
+void execute(Chip8* chip8);
 
 #endif
