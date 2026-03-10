@@ -1,18 +1,17 @@
-#ifndef CPU.H
-#define CPU.H
+#pragma once
 #include <stdint.h>
 
-const int NUM_REGISTERS = 16;
-const int VF_REGISTER = 15;
-const int NUM_KEYS = 16;
-const int MEMORY_SIZE = 4096;
-const int STACK_SIZE = 16;
+#define NUM_REGISTERS 16
+#define VF_REGISTER 15
+#define NUM_KEYS 16
+#define MEMORY_SIZE 4096
+#define STACK_SIZE 16
 
-const int DISPLAY_X = 64;
-const int DISPLAY_Y = 32;
-const int DISPLAY_SIZE = DISPLAY_X * DISPLAY_Y;
+#define DISPLAY_X 64
+#define DISPLAY_Y 32
+#define DISPLAY_SIZE 2048 // DISPLAY_X * DISPLAY_Y
 
-const int ROM_BASE_ADDRESS = 0x200;
+#define ROM_BASE_ADDRESS 0x200
 
 typedef struct {
     uint8_t memory[MEMORY_SIZE]; // Main memory
@@ -34,32 +33,12 @@ typedef struct {
     uint16_t opcode; // Current Operation code
 } Chip8;
 
-const int FONT_BASE_ADDRESS = 0x50;
-const int FONT_LENGTH = 16;
-uint8_t FONT_SPRITES[] = {
-    0XF0, 0X90, 0X90, 0X90, 0XF0, // 0
-    0X20, 0X60, 0X20, 0X20, 0X70, // 1
-    0XF0, 0X10, 0XF0, 0X80, 0XF0, // 2
-    0XF0, 0X10, 0XF0, 0X10, 0XF0, // 3
-    0X90, 0X90, 0XF0, 0X10, 0X10, // 4
-    0XF0, 0X80, 0XF0, 0X10, 0XF0, // 5
-    0XF0, 0X80, 0XF0, 0X90, 0XF0, // 6
-    0XF0, 0X10, 0X20, 0X40, 0X40, // 7
-    0XF0, 0X90, 0XF0, 0X90, 0XF0, // 8
-    0XF0, 0X90, 0XF0, 0X10, 0XF0, // 9
-    0XF0, 0X90, 0XF0, 0X90, 0X90, // A
-    0XE0, 0X90, 0XE0, 0X90, 0XE0, // B
-    0XF0, 0X80, 0X80, 0X80, 0XF0, // C
-    0XE0, 0X90, 0X90, 0X90, 0XE0, // D
-    0XF0, 0X80, 0XF0, 0X80, 0XF0, // E
-    0XF0, 0X80, 0XF0, 0X80, 0X80  // F
-};
+#define FONT_BASE_ADDRESS 0x50
+#define FONT_LENGTH 16
 
 void init(Chip8* chip8);
-void load_ROM(Chip8* chip8, char** filename);
+void load_ROM(Chip8* chip8, char* filename);
 void fetch(Chip8* chip8);
 void execute(Chip8* chip8);
 void update_timers(Chip8* chip8);
 void cycle(Chip8* chip8);
-
-#endif

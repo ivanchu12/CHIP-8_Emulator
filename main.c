@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[]){
     if (argc != 2){
-        printf("Incorrect usage");
+        printf("Incorrect usage. No ROM file indicated\n");
         return 0;
     }
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
         gettimeofday(&currentTime, NULL);
         dct += currentTime.tv_usec/1000 - lastTime.tv_usec/1000;
         dtt += currentTime.tv_usec/1000 - lastTime.tv_usec/1000;
-        
+
         lastTime.tv_sec = currentTime.tv_sec;
         lastTime.tv_usec = currentTime.tv_usec;
 

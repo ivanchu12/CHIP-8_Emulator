@@ -136,7 +136,7 @@ void OP_8xy7(Chip8* chip8){
 
 void OP_8xyE(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
-    chip8->registers[VF_REGISTER] = (chip8->registers[vx] & 0x80) >> 128;
+    chip8->registers[VF_REGISTER] = (chip8->registers[vx] & 0x80) >> 7;
     chip8->registers[vx] = chip8->registers[vx] << 1;
 }
 

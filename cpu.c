@@ -1,6 +1,26 @@
 #include <string.h>
 #include <stdio.h>
 #include "cpu.h"
+#include "ops.h"
+
+uint8_t FONT_SPRITES[] = {
+    0XF0, 0X90, 0X90, 0X90, 0XF0, // 0
+    0X20, 0X60, 0X20, 0X20, 0X70, // 1
+    0XF0, 0X10, 0XF0, 0X80, 0XF0, // 2
+    0XF0, 0X10, 0XF0, 0X10, 0XF0, // 3
+    0X90, 0X90, 0XF0, 0X10, 0X10, // 4
+    0XF0, 0X80, 0XF0, 0X10, 0XF0, // 5
+    0XF0, 0X80, 0XF0, 0X90, 0XF0, // 6
+    0XF0, 0X10, 0X20, 0X40, 0X40, // 7
+    0XF0, 0X90, 0XF0, 0X90, 0XF0, // 8
+    0XF0, 0X90, 0XF0, 0X10, 0XF0, // 9
+    0XF0, 0X90, 0XF0, 0X90, 0X90, // A
+    0XE0, 0X90, 0XE0, 0X90, 0XE0, // B
+    0XF0, 0X80, 0X80, 0X80, 0XF0, // C
+    0XE0, 0X90, 0X90, 0X90, 0XE0, // D
+    0XF0, 0X80, 0XF0, 0X80, 0XF0, // E
+    0XF0, 0X80, 0XF0, 0X80, 0X80  // F
+};
 
 void load_font(Chip8* chip8){
     for (int i = 0; i < FONT_LENGTH; i++){
@@ -24,13 +44,13 @@ void init(Chip8* chip8){
     load_font(chip8);
 }
 
-void load_ROM(Chip8* chip8, char** filename){
-    FILE* file = fopen(&filename, "rb");
+void load_ROM(Chip8* chip8, char* filename){
+    FILE* file = fopen(filename, "rb");
     fseek(file, 0, SEEK_END);
     int filelen = ftell(file);
     rewind(file);
 
-    fread(chip8->memory[ROM_BASE_ADDRESS], 1, filelen, file);
+    fread(&(chip8->memory[ROM_BASE_ADDRESS]), 1, filelen, file);
 }
 
 void fetch(Chip8* chip8){
