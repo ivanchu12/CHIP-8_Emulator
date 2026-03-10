@@ -30,7 +30,7 @@ void load_font(Chip8* chip8){
 
 void init(Chip8* chip8){
     memset(chip8->memory, 0, MEMORY_SIZE);
-    memset(chip8->stack, 0, STACK_SIZE);
+    memset(chip8->stack, 0, STACK_SIZE * sizeof(uint16_t));
     memset(chip8->display, 0, DISPLAY_SIZE);
     memset(chip8->registers, 0, NUM_REGISTERS);
     memset(chip8->keypad, 0, NUM_KEYS);

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include "cpu.h"
 
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]){
     float timers_time = (1/60) * 1000;
     float dtt = 0;
 
-    Chip8* chip8;
+    Chip8* chip8 = (Chip8*)malloc(sizeof(Chip8));
     init(chip8);
     load_ROM(chip8, argv[1]);
 
