@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "cpu.h"
+#include "video.h"
 #include "debug.h"
 
 int main(int argc, char *argv[]){
@@ -24,6 +25,9 @@ int main(int argc, char *argv[]){
     init(chip8);
     load_ROM(chip8, argv[1]);
 
+    Screen* screen = (Screen*)malloc(sizeof(Screen));
+    init_screen(screen, chip8);
+
     struct timeval lastTime, currentTime;
     gettimeofday(&lastTime, NULL);
 
@@ -38,6 +42,7 @@ int main(int argc, char *argv[]){
         if (dct > cycle_time){
             cycle(chip8);
 	        LOG("[ CPU INFO ] Cycle: %d, pc: %X, opcode: %X\n", cycle_count++, chip8->pc, chip8->opcode);
+            draw(screen);
             dct = 0;
         }
         if (dtt > timers_time){
