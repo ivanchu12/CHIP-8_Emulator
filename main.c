@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "cpu.h"
-#include "video.h"
+#include "ui.h"
 #include "debug.h"
 
 int main(int argc, char *argv[]){
@@ -30,8 +30,11 @@ int main(int argc, char *argv[]){
 
     struct timeval lastTime, currentTime;
     gettimeofday(&lastTime, NULL);
+    int quit = 0;
 
-    while (1){
+    while (!quit){
+        quit = proces_input(chip8);
+
         gettimeofday(&currentTime, NULL);
         dct += (currentTime.tv_usec - lastTime.tv_usec)%__LONG_MAX__;
         dtt += (currentTime.tv_usec - lastTime.tv_usec)%__LONG_MAX__;

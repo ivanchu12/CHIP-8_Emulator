@@ -10,3 +10,4 @@ typedef struct {
 
 void init_screen(Screen* screen, Chip8* chip8);
 void draw(Screen* screen);
+int proces_input(Chip8* chip8);
