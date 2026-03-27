@@ -41,6 +41,7 @@ void init(Chip8* chip8){
     chip8->dt = 0;
     chip8->sp = 0;
     chip8->st = 0;
+    chip8->draw = 0;
     load_font(chip8);
 }
 

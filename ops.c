@@ -108,36 +108,40 @@ void OP_8xy4(Chip8* chip8){
     uint8_t vy = get_second_operand(chip8->opcode);
     uint16_t result = chip8->registers[vx] + chip8->registers[vy];
     
-    chip8->registers[VF_REGISTER] = (result > 255)? 1 : 0;
     chip8->registers[vx] = result & 0xFF;
+    chip8->registers[VF_REGISTER] = (result > 255)? 1 : 0;
 }
 
 void OP_8xy5(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     uint8_t vy = get_second_operand(chip8->opcode);
     
-    chip8->registers[VF_REGISTER] = (chip8->registers[vx] > chip8->registers[vy])? 1 : 0;
+    int8_t flag = (chip8->registers[vx] >= chip8->registers[vy])? 1 : 0;
     chip8->registers[vx] = chip8->registers[vx] - chip8->registers[vy];
+    chip8->registers[VF_REGISTER] = flag;
 }
 
 void OP_8xy6(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
-    chip8->registers[VF_REGISTER] = (chip8->registers[vx] & 0x01);
+    int8_t flag = (chip8->registers[vx] & 0x01);
     chip8->registers[vx] = chip8->registers[vx] >> 1;
+    chip8->registers[VF_REGISTER] = flag;
 }
 
 void OP_8xy7(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     uint8_t vy = get_second_operand(chip8->opcode);
     
-    chip8->registers[VF_REGISTER] = (chip8->registers[vy] > chip8->registers[vx])? 1 : 0;
-    chip8->registers[vy] = chip8->registers[vy] - chip8->registers[vx];
+    int8_t flag = (chip8->registers[vy] >= chip8->registers[vx])? 1 : 0;
+    chip8->registers[vx] = chip8->registers[vy] - chip8->registers[vx];
+    chip8->registers[VF_REGISTER] = flag;
 }
 
 void OP_8xyE(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
-    chip8->registers[VF_REGISTER] = (chip8->registers[vx] & 0x80) >> 7;
+    int8_t flag = (chip8->registers[vx] & 0x80) >> 7;
     chip8->registers[vx] = chip8->registers[vx] << 1;
+    chip8->registers[VF_REGISTER] = flag;
 }
 
 void OP_9xy0(Chip8* chip8){
@@ -193,6 +197,7 @@ void OP_Dxyn(Chip8* chip8){
             mask >>= 1;
         }
     }
+    chip8->draw = 1;
 }
 
 void OP_Ex9E(Chip8* chip8){

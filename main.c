@@ -45,7 +45,10 @@ int main(int argc, char *argv[]){
         if (dct > cycle_time){
             cycle(chip8);
 	        LOG("[ CPU INFO ] Cycle: %d, pc: %X, opcode: %X\n", cycle_count++, chip8->pc, chip8->opcode);
-            draw(screen);
+            if (chip8->draw){
+                draw(screen);
+                chip8->draw = 0;
+            }
             dct = 0;
         }
         if (dtt > timers_time){

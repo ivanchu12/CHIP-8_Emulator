@@ -31,6 +31,8 @@ typedef struct {
     uint8_t display[DISPLAY_SIZE]; // Display 64x32
 
     uint16_t opcode; // Current Operation code
+
+    uint8_t draw; // Drawing Optimization. Not part of actual CHIP8 arquitecture
 } Chip8;
 
 #define FONT_BASE_ADDRESS 0x50
