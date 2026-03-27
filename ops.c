@@ -235,6 +235,7 @@ void OP_Fx0A(Chip8* chip8){
             chip8->registers[vx] = i;
             exit = 1;
         }
+        i++;
     }
     if (!exit){
         chip8->pc -= 2;

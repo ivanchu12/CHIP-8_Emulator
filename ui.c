@@ -2,7 +2,7 @@
 #include "ui.h"
 #include "cpu.h"
 
-SDL_Color palette[2] = {{0, 0, 0, 255}, {255, 255, 255, 255}};
+SDL_Color palette[2] = {{7, 85, 59, 255}, {206, 212, 106, 255}};
 
 void init_screen(Screen* screen, Chip8* chip8){
     SDL_Init(SDL_INIT_VIDEO);
