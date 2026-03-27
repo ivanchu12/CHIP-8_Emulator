@@ -169,31 +169,29 @@ void OP_Cxkk(Chip8* chip8){
 void OP_Dxyn(Chip8* chip8){
     uint8_t vx = get_first_operand(chip8->opcode);
     uint8_t vy = get_second_operand(chip8->opcode);
-    uint8_t n = chip8->opcode && 0x000F;
+    uint8_t n = chip8->opcode & 0x000F;
 
-    uint8_t x = chip8->registers[vx];
-    uint8_t y = chip8->registers[vy];
+    uint8_t x = chip8->registers[vx] % DISPLAY_X;
+    uint8_t y = chip8->registers[vy] % DISPLAY_Y;
+    int current_display_pos;
     for (int i = 0; i<n; i++){
-        int current_display_pos = x + y*DISPLAY_X;
+        current_display_pos = x + (y+i)*DISPLAY_X;
         int8_t updated_sprite = chip8->memory[chip8->ir + i];
         
         uint8_t mask = 0x80;
         uint8_t original;
         uint8_t result;
         for (int j = 0; j<8; j++){
-            original = chip8->display[current_display_pos];
-            result = chip8->display[current_display_pos] ^ (updated_sprite & mask);
-            chip8->display[current_display_pos] = result;
+            if (current_display_pos%DISPLAY_X >= x){
+                original = chip8->display[current_display_pos];
+                result = chip8->display[current_display_pos] ^ ((updated_sprite & mask) >> (7 - j));
+                chip8->display[current_display_pos] = result;
 
-            chip8->registers[VF_REGISTER] = (original == 1 && result == 0)? 1 | chip8->registers[15] : 0 | chip8->registers[15];
-
-            current_display_pos++;
-            if (current_display_pos%DISPLAY_X < x){
-                current_display_pos -= DISPLAY_X;
+                chip8->registers[VF_REGISTER] = (original == 1 && result == 0)? (1 | chip8->registers[VF_REGISTER]) : (0 | chip8->registers[VF_REGISTER]);
+                current_display_pos++;
             }
             mask >>= 1;
         }
-        y++;
     }
 }
 
